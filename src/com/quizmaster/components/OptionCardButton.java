@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interactive MCQ Choice card displaying choice letter badge [A-D],
@@ -77,6 +79,8 @@ public class OptionCardButton extends JPanel {
 
     public void setText(String text) {
         this.text = text;
+        // full text on hover in case a long option had to be ellipsised
+        setToolTipText(text != null && text.length() > 60 ? text : null);
         repaint();
     }
 
@@ -178,18 +182,72 @@ public class OptionCardButton extends JPanel {
         g2.setColor(textColor);
         FontMetrics fmText = g2.getFontMetrics();
         int textX = badgeX + badgeSize + 16;
-        int textY = (h - fmText.getHeight()) / 2 + fmText.getAscent();
+        int maxTextWidth = w - textX - 16;
 
-        // Strikethrough if eliminated
-        if (state == CardState.ELIMINATED) {
-            g2.drawString(text, textX, textY);
-            int tw = fmText.stringWidth(text);
-            g2.setColor(AppTheme.TEXT_MUTED);
-            g2.drawLine(textX, textY - fmText.getAscent() / 3, textX + tw, textY - fmText.getAscent() / 3);
-        } else {
-            g2.drawString(text, textX, textY);
+        // Long options wrap onto a second line (ellipsised after that) instead of
+        // running past the card edge.
+        List<String> lines = wrapText(fmText, text == null ? "" : text, maxTextWidth, 2);
+        int lineHeight = fmText.getHeight();
+        int firstBaseline = (h - lineHeight * lines.size()) / 2 + fmText.getAscent();
+
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            int baseline = firstBaseline + i * lineHeight;
+            g2.setColor(textColor);
+            g2.drawString(line, textX, baseline);
+
+            // Strikethrough if eliminated
+            if (state == CardState.ELIMINATED) {
+                int y = baseline - fmText.getAscent() / 3;
+                g2.setColor(AppTheme.TEXT_MUTED);
+                g2.drawLine(textX, y, textX + fmText.stringWidth(line), y);
+            }
         }
 
         g2.dispose();
+    }
+
+    /**
+     * Greedy word wrap into at most {@code maxLines} lines; the last line is
+     * ellipsised if the text still does not fit.
+     */
+    private static List<String> wrapText(FontMetrics fm, String text, int maxWidth, int maxLines) {
+        List<String> lines = new ArrayList<>();
+        if (maxWidth <= 0 || fm.stringWidth(text) <= maxWidth) {
+            lines.add(text);
+            return lines;
+        }
+
+        String[] words = text.split(" ");
+        StringBuilder current = new StringBuilder();
+        int idx = 0;
+        for (; idx < words.length; idx++) {
+            String candidate = current.length() == 0 ? words[idx] : current + " " + words[idx];
+            if (fm.stringWidth(candidate) <= maxWidth) {
+                current = new StringBuilder(candidate);
+            } else if (lines.size() == maxLines - 1) {
+                break; // out of lines: the remainder is ellipsised below
+            } else if (current.length() == 0) {
+                current = new StringBuilder(words[idx]);
+            } else {
+                lines.add(ellipsize(fm, current.toString(), maxWidth));
+                current = new StringBuilder(words[idx]);
+            }
+        }
+        for (int j = idx; j < words.length; j++) {
+            current.append(' ').append(words[j]);
+        }
+        lines.add(ellipsize(fm, current.toString(), maxWidth));
+        return lines;
+    }
+
+    private static String ellipsize(FontMetrics fm, String s, int maxWidth) {
+        if (fm.stringWidth(s) <= maxWidth) return s;
+        String dots = "…";
+        int end = s.length();
+        while (end > 0 && fm.stringWidth(s.substring(0, end) + dots) > maxWidth) {
+            end--;
+        }
+        return s.substring(0, Math.max(0, end)).trim() + dots;
     }
 }

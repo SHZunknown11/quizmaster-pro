@@ -7,6 +7,7 @@ import com.quizmaster.model.Category;
 import com.quizmaster.service.AudioService;
 import com.quizmaster.service.QuestionBankService;
 import com.quizmaster.util.AppTheme;
+import com.quizmaster.util.UiKit;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -69,7 +70,7 @@ public class CategorySelectPanel extends JPanel {
         backBtn.addActionListener(e -> {
             if (onBack != null) onBack.run();
         });
-        header.add(backBtn, BorderLayout.EAST);
+        header.add(UiKit.verticallyCentered(backBtn), BorderLayout.EAST);
 
         add(header, BorderLayout.NORTH);
 

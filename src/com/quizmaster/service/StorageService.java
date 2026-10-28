@@ -134,7 +134,8 @@ public class StorageService {
         initialProfile.setTotalQuizzes(0);
         initialProfile.setBestScore(0);
         initialProfile.setAverageScore(0);
-        initialProfile.setDayStreak(1);
+        // a streak only starts once the first quiz is completed (recordQuiz sets it to 1)
+        initialProfile.setDayStreak(0);
         initialProfile.setLastQuizDate("");
         initialProfile.setTimerPreference(UserProfile.DEFAULT_TIMER_SECONDS);
         initialProfile.setRecentActivity(new ArrayList<>());
@@ -320,6 +321,21 @@ public class StorageService {
             System.err.println("Error loading history: " + e.getMessage());
         }
         return results;
+    }
+
+    /**
+     * Empties the signed-in user's quiz history (used by "Reset All Data").
+     * Writes an empty list rather than deleting, so the legacy shared history file
+     * can never be picked up again as a fallback.
+     */
+    public void clearHistory() {
+        Path path = resolveQuizHistoryPath();
+        try {
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, "[]", StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            System.err.println("Error clearing history: " + e.getMessage());
+        }
     }
 
     public void saveResult(QuizResult result) {

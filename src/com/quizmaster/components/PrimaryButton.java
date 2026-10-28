@@ -29,6 +29,7 @@ public class PrimaryButton extends JButton {
         setFont(AppTheme.FONT_BODY_BOLD);
         setForeground(textColor);
         setFocusPainted(false);
+        setRequestFocusEnabled(false); // clicking must not leave a focus ring; Tab still works
         setBorderPainted(false);
         setContentAreaFilled(false);
         setOpaque(false);
@@ -106,6 +107,13 @@ public class PrimaryButton extends JButton {
         int tx = (w - fm.stringWidth(getText())) / 2;
         int ty = (h - fm.getHeight()) / 2 + fm.getAscent() + yOffset;
         g2.drawString(getText(), tx, ty);
+
+        // Keyboard focus ring (mouse clicks do not take focus, so it only shows for Tab navigation)
+        if (isFocusOwner() && isEnabled()) {
+            g2.setColor(AppTheme.ACCENT_BLUE);
+            g2.setStroke(new BasicStroke(2f));
+            g2.drawRoundRect(1, 1, w - 3, h - 3, AppTheme.BUTTON_RADIUS, AppTheme.BUTTON_RADIUS);
+        }
 
         g2.dispose();
     }

@@ -6,6 +6,9 @@ import com.quizmaster.model.QuizResult;
 import com.quizmaster.model.QuizSession;
 import com.quizmaster.service.AudioService;
 import com.quizmaster.util.AppTheme;
+import com.quizmaster.util.DarkScrollBarUI;
+import com.quizmaster.util.HtmlText;
+import com.quizmaster.util.UiKit;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -31,7 +34,14 @@ public class QuizPanel extends JPanel {
     private int secondsRemaining;
     private Timer countdownTimer;
     private boolean answerConfirmed = false;
+    private boolean quizCompleted = false;
     private int selectedOptionIndex = -1;
+
+    // Raw (unescaped) text kept so the labels can be re-wrapped when the window is resized
+    private String questionStem = "";
+    private String noteTitle = "";
+    private String noteBody = "";
+    private int lastTextWidth = -1;
 
     // UI Components
     private JLabel breadcrumbLabel;
@@ -104,10 +114,14 @@ public class QuizPanel extends JPanel {
                 g2.fillRoundRect(0, 0, w, h, h, h);
 
                 if (session != null && session.getTotalQuestions() > 0) {
-                    float pct = (float) (session.getCurrentIndex()) / session.getTotalQuestions();
-                    int fillW = Math.max(h, (int) (w * pct));
-                    g2.setColor(AppTheme.ACCENT_AMBER);
-                    g2.fillRoundRect(0, 0, fillW, h, h, h);
+                    // the current question counts once it has been answered, so the bar reaches 100%
+                    int done = session.getCurrentIndex() + (answerConfirmed ? 1 : 0);
+                    float pct = (float) done / session.getTotalQuestions();
+                    if (pct > 0) {
+                        int fillW = Math.max(h, (int) (w * pct));
+                        g2.setColor(AppTheme.ACCENT_AMBER);
+                        g2.fillRoundRect(0, 0, fillW, h, h, h);
+                    }
                 }
                 g2.dispose();
             }
@@ -143,7 +157,7 @@ public class QuizPanel extends JPanel {
 
                 // Active arc
                 int totalSecs = (session != null) ? session.getTimerSecondsPerQuestion() : 30;
-                float fraction = (float) secondsRemaining / totalSecs;
+                float fraction = totalSecs > 0 ? Math.max(0f, (float) secondsRemaining / totalSecs) : 0f;
                 float extent = -fraction * 360f;
 
                 Color arcColor = secondsRemaining <= 5 ? AppTheme.ACCENT_RED :
@@ -173,7 +187,7 @@ public class QuizPanel extends JPanel {
         };
         topRight.add(timerArcComponent);
 
-        JButton quitBtn = new JButton("Quit ✕") {
+        JButton quitBtn = new JButton("Quit") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -218,25 +232,28 @@ public class QuizPanel extends JPanel {
         add(topBar, BorderLayout.NORTH);
 
         // ── Center Question Area ───────────────────────────────────────
-        JPanel centerPanel = new JPanel();
+        JPanel centerPanel = new UiKit.ViewportWidthPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setOpaque(false);
         centerPanel.setBorder(new EmptyBorder(12, 0, 8, 0));
 
         // Lifelines Row
-        JPanel lifelinesRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        JPanel lifelinesRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         lifelinesRow.setOpaque(false);
         lifelinesRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lifelinesRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
 
         fiftyFiftyBtn = new SecondaryButton("50:50 Lifeline");
         fiftyFiftyBtn.setPreferredSize(new Dimension(130, 34));
         fiftyFiftyBtn.setFont(AppTheme.FONT_SMALL_BOLD);
+        fiftyFiftyBtn.setToolTipText("Removes two wrong answers (once per quiz)");
         fiftyFiftyBtn.addActionListener(e -> useFiftyFifty());
         lifelinesRow.add(fiftyFiftyBtn);
+        lifelinesRow.add(Box.createHorizontalStrut(10));
 
         hintBtn = new SecondaryButton("View Hint");
         hintBtn.setPreferredSize(new Dimension(100, 34));
         hintBtn.setFont(AppTheme.FONT_SMALL_BOLD);
+        hintBtn.setToolTipText("Shows a hint for this question (once per quiz)");
         hintBtn.addActionListener(e -> useHint());
         lifelinesRow.add(hintBtn);
 
@@ -248,7 +265,7 @@ public class QuizPanel extends JPanel {
         questionCard.setLayout(new BorderLayout());
         questionCard.setBorder(new EmptyBorder(16, 20, 16, 20));
         questionCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-        questionCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
+        questionCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
         questionTextLabel = new JLabel("Question text will appear here...");
         questionTextLabel.setFont(AppTheme.FONT_HEADING);
@@ -262,7 +279,7 @@ public class QuizPanel extends JPanel {
         codeSnippetPanel = new JPanel(new BorderLayout());
         codeSnippetPanel.setOpaque(false);
         codeSnippetPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        codeSnippetPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+        codeSnippetPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
 
         codeSnippetArea = new JTextArea();
         codeSnippetArea.setFont(AppTheme.FONT_CODE);
@@ -281,6 +298,7 @@ public class QuizPanel extends JPanel {
         codeScroll.getVerticalScrollBar().setUnitIncrement(14);
         codeScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         codeScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        DarkScrollBarUI.style(codeScroll);
 
         codeSnippetPanel.add(codeScroll, BorderLayout.CENTER);
         codeSnippetPanel.setVisible(false);
@@ -309,7 +327,7 @@ public class QuizPanel extends JPanel {
         explanationPanel.setLayout(new BorderLayout());
         explanationPanel.setBorder(new EmptyBorder(10, 14, 10, 14));
         explanationPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        explanationPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+        explanationPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
         explanationLabel = new JLabel("");
         explanationLabel.setFont(AppTheme.FONT_SMALL);
@@ -319,7 +337,14 @@ public class QuizPanel extends JPanel {
 
         centerPanel.add(explanationPanel);
 
-        add(centerPanel, BorderLayout.CENTER);
+        JScrollPane centerScroll = new JScrollPane(centerPanel);
+        centerScroll.setOpaque(false);
+        centerScroll.getViewport().setOpaque(false);
+        centerScroll.setBorder(null);
+        centerScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        centerScroll.getVerticalScrollBar().setUnitIncrement(16);
+        DarkScrollBarUI.style(centerScroll);
+        add(centerScroll, BorderLayout.CENTER);
 
         // ── Bottom Action Bar ──────────────────────────────────────────
         JPanel bottomBar = new JPanel(new BorderLayout());
@@ -345,6 +370,7 @@ public class QuizPanel extends JPanel {
     public void startSession(QuizSession newSession) {
         if (newSession == null) return;
         this.session = newSession;
+        this.quizCompleted = false;
         this.answerConfirmed = false;
         this.selectedOptionIndex = -1;
         loadQuestion(session.getCurrentQuestion());
@@ -355,26 +381,37 @@ public class QuizPanel extends JPanel {
         answerConfirmed = false;
         selectedOptionIndex = -1;
         explanationPanel.setVisible(false);
-        explanationLabel.setText("");
+        clearNote();
 
         breadcrumbLabel.setText(session.getCategory() + " / Question " +
                 String.format("%02d", session.getCurrentIndex() + 1) + " of " +
                 String.format("%02d", session.getTotalQuestions()));
 
-        // Format question and check for code snippet
+        // Split an optional ``` code fence out of the question text
         String text = q.getQuestionText();
+        String code = null;
         if (text.contains("```")) {
             String[] parts = text.split("```");
-            questionTextLabel.setText("<html><body style='width: 580px;'>" + parts[0].trim() + "</body></html>");
-            if (parts.length > 1) {
-                codeSnippetArea.setText(parts[1].trim());
-                codeSnippetArea.setCaretPosition(0);
-                codeSnippetPanel.setVisible(true);
-            } else {
-                codeSnippetPanel.setVisible(false);
+            StringBuilder stem = new StringBuilder(parts[0].trim());
+            if (parts.length > 2 && !parts[2].trim().isEmpty()) {
+                stem.append(' ').append(parts[2].trim());   // text that follows the snippet
             }
+            text = stem.toString();
+            if (parts.length > 1) {
+                code = parts[1].trim();
+            }
+        }
+        questionStem = text;
+        renderTexts();
+
+        if (code != null && !code.isEmpty()) {
+            codeSnippetArea.setText(code);
+            codeSnippetArea.setCaretPosition(0);
+            int lines = code.split("\r?\n", -1).length;
+            int height = Math.min(160, lines * 18 + 20);
+            codeSnippetPanel.setPreferredSize(new Dimension(0, height));
+            codeSnippetPanel.setVisible(true);
         } else {
-            questionTextLabel.setText("<html><body style='width: 580px;'>" + text + "</body></html>");
             codeSnippetPanel.setVisible(false);
         }
 
@@ -385,18 +422,70 @@ public class QuizPanel extends JPanel {
             optionButtons[i].setState(OptionCardButton.CardState.DEFAULT);
         }
 
-        // Reset lifeline button states
+        // Reset lifeline button states (a question without a hint must not burn the lifeline)
         fiftyFiftyBtn.setEnabled(!session.isFiftyFiftyUsed());
-        hintBtn.setEnabled(!session.isHintUsed());
+        boolean hasHint = q.getHint() != null && !q.getHint().trim().isEmpty();
+        hintBtn.setEnabled(!session.isHintUsed() && hasHint);
+        hintBtn.setToolTipText(hasHint
+                ? "Shows a hint for this question (once per quiz)"
+                : "No hint available for this question");
 
         actionBtn.setText("Confirm Answer →");
         actionBtn.setEnabled(false);
         skipBtn.setEnabled(true);
 
         progressBar.repaint();
+        revalidate();
+        repaint();
 
         // Start countdown timer for this question
         startQuestionTimer();
+    }
+
+    // ── Text rendering (escaped + width-aware) ─────────────────────────
+
+    /** Wrap width for the question/explanation labels, tracking the window width. */
+    private int textWidth() {
+        // panel padding (2 x 36) + card padding (2 x 20) + scroll bar and safety margin
+        return Math.max(320, getWidth() - 72 - 40 - 24);
+    }
+
+    private void renderTexts() {
+        int w = textWidth();
+        lastTextWidth = w;
+        questionTextLabel.setText(HtmlText.paragraph(questionStem, w));
+        if (noteBody.isEmpty()) {
+            explanationLabel.setText("");
+        } else {
+            explanationLabel.setText(HtmlText.html(
+                    "<b>" + HtmlText.escape(noteTitle) + ":</b> " + HtmlText.escape(noteBody), w));
+        }
+    }
+
+    private void showNote(String title, String body) {
+        noteTitle = title;
+        noteBody = body;
+        renderTexts();
+        explanationPanel.setVisible(true);
+        revalidate();
+        // on a short window the note sits below the fold: bring it into view
+        SwingUtilities.invokeLater(() -> explanationPanel.scrollRectToVisible(
+                new Rectangle(0, 0, explanationPanel.getWidth(), explanationPanel.getHeight())));
+    }
+
+    private void clearNote() {
+        noteTitle = "";
+        noteBody = "";
+        explanationLabel.setText("");
+    }
+
+    @Override
+    public void doLayout() {
+        super.doLayout();
+        // re-wrap the labels when the window width changes
+        if (questionTextLabel != null && textWidth() != lastTextWidth) {
+            renderTexts();
+        }
     }
 
     private void startQuestionTimer() {
@@ -436,10 +525,28 @@ public class QuizPanel extends JPanel {
         }
     }
 
-    private void resumeTimer() {
-        if (countdownTimer != null && !answerConfirmed) {
+    /** Pauses the countdown while a confirmation dialog is open. */
+    public void pauseTimer() {
+        stopTimer();
+    }
+
+    public void resumeTimer() {
+        if (countdownTimer != null && session != null && !answerConfirmed && !quizCompleted) {
             countdownTimer.start();
         }
+    }
+
+    /** True while a quiz is on screen and not yet finished. */
+    public boolean isQuizInProgress() {
+        return session != null && !quizCompleted && isShowing();
+    }
+
+    /** Drops the running session (user chose to leave the quiz). */
+    public void abandonSession() {
+        stopTimer();
+        session = null;
+        selectedOptionIndex = -1;
+        answerConfirmed = false;
     }
 
     private void selectOption(int index) {
@@ -495,11 +602,14 @@ public class QuizPanel extends JPanel {
             AudioService.playWrong();
         }
 
-        // Show Explanation
-        if (q.getExplanation() != null && !q.getExplanation().isEmpty()) {
-            explanationLabel.setText("<html><body style='width: 580px;'><b>Explanation:</b> " + q.getExplanation() + "</body></html>");
-            explanationPanel.setVisible(true);
+        // Show Explanation (replaces any hint that was showing)
+        if (q.getExplanation() != null && !q.getExplanation().trim().isEmpty()) {
+            showNote("Explanation", q.getExplanation());
+        } else {
+            explanationPanel.setVisible(false);
+            clearNote();
         }
+        progressBar.repaint();
 
         skipBtn.setEnabled(false);
         fiftyFiftyBtn.setEnabled(false);
@@ -508,7 +618,7 @@ public class QuizPanel extends JPanel {
         if (session.hasNext()) {
             actionBtn.setText("Next Question →");
         } else {
-            actionBtn.setText("View Results 🎉");
+            actionBtn.setText("View Results →");
         }
         actionBtn.setEnabled(true);
     }
@@ -528,7 +638,9 @@ public class QuizPanel extends JPanel {
             session.moveNext();
             loadQuestion(session.getCurrentQuestion());
         } else {
-            // Quiz completed!
+            // Quiz completed! (guard: a double Enter/click must not save the result twice)
+            if (quizCompleted) return;
+            quizCompleted = true;
             stopTimer();
             AudioService.playComplete();
             QuizResult result = session.buildResult();
@@ -544,6 +656,11 @@ public class QuizPanel extends JPanel {
         if (eliminated != null) {
             for (int idx : eliminated) {
                 optionButtons[idx].setState(OptionCardButton.CardState.ELIMINATED);
+                // an already-selected option may just have been struck out: drop the selection
+                if (idx == selectedOptionIndex) {
+                    selectedOptionIndex = -1;
+                    actionBtn.setEnabled(false);
+                }
             }
             fiftyFiftyBtn.setEnabled(false);
             AudioService.playClick();
@@ -553,9 +670,8 @@ public class QuizPanel extends JPanel {
     private void useHint() {
         if (session == null || answerConfirmed || session.isHintUsed()) return;
         String hint = session.useHint();
-        if (hint != null) {
-            explanationLabel.setText("<html><body style='width: 580px;'><b>Hint:</b> " + hint + "</body></html>");
-            explanationPanel.setVisible(true);
+        if (hint != null && !hint.trim().isEmpty()) {
+            showNote("Hint", hint);
             hintBtn.setEnabled(false);
             AudioService.playClick();
         }
@@ -574,7 +690,8 @@ public class QuizPanel extends JPanel {
             am.put("select_opt_" + k, new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (!answerConfirmed && optionButtons[optIdx].getState() != OptionCardButton.CardState.ELIMINATED) {
+                    if (isShowing() && session != null && !answerConfirmed
+                            && optionButtons[optIdx].getState() != OptionCardButton.CardState.ELIMINATED) {
                         selectOption(optIdx);
                     }
                 }
@@ -587,7 +704,8 @@ public class QuizPanel extends JPanel {
         am.put("enter_action", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (actionBtn.isEnabled()) {
+                // WHEN_IN_FOCUSED_WINDOW bindings must not act while another screen is showing
+                if (isShowing() && session != null && actionBtn.isEnabled()) {
                     onActionButtonClicked();
                 }
             }

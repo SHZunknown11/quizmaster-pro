@@ -148,6 +148,7 @@ public class DashboardPanel extends JPanel {
             JLabel emptyLabel = new JLabel("No quizzes taken yet. Hit 'Start New Quiz' to begin!");
             emptyLabel.setFont(AppTheme.FONT_BODY);
             emptyLabel.setForeground(AppTheme.TEXT_MUTED);
+            emptyLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             activityListContainer.add(emptyLabel);
         } else {
             for (ActivityEntry act : list) {
@@ -165,6 +166,7 @@ public class DashboardPanel extends JPanel {
         item.setLayout(new BorderLayout());
         item.setBorder(new EmptyBorder(12, 16, 12, 16));
         item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 54));
+        item.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Left: colored status dot + category name
         JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
@@ -206,7 +208,7 @@ public class DashboardPanel extends JPanel {
         PillBadge scorePill = new PillBadge(act.getScorePercent() + "%", dotColor);
         right.add(scorePill);
 
-        JLabel dateLabel = new JLabel(act.getDate());
+        JLabel dateLabel = new JLabel(act.getRelativeTime());
         dateLabel.setFont(AppTheme.FONT_SMALL);
         dateLabel.setForeground(AppTheme.TEXT_MUTED);
         right.add(dateLabel);

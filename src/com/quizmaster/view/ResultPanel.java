@@ -51,6 +51,7 @@ public class ResultPanel extends JPanel {
         JPanel centerContainer = new JPanel();
         centerContainer.setLayout(new BoxLayout(centerContainer, BoxLayout.Y_AXIS));
         centerContainer.setOpaque(false);
+        centerContainer.add(Box.createVerticalGlue());
 
         // ── 1. Top Header ──────────────────────────────────────────────
         titleLabel = new JLabel("Quiz Complete!");
@@ -71,10 +72,11 @@ public class ResultPanel extends JPanel {
         JPanel pillRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 0));
         pillRow.setOpaque(false);
         pillRow.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pillRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
 
-        correctPill = new PillBadge("✓ 8 Correct", AppTheme.ACCENT_GREEN);
-        wrongPill = new PillBadge("✕ 1 Wrong", AppTheme.ACCENT_RED);
-        skippedPill = new PillBadge("→ 1 Skipped", AppTheme.ACCENT_SLATE);
+        correctPill = new PillBadge("8 Correct", AppTheme.ACCENT_GREEN, PillBadge.Glyph.CHECK);
+        wrongPill = new PillBadge("1 Wrong", AppTheme.ACCENT_RED, PillBadge.Glyph.CROSS);
+        skippedPill = new PillBadge("1 Skipped", AppTheme.ACCENT_SLATE, PillBadge.Glyph.ARROW);
         gradePill = new PillBadge("Grade A", AppTheme.ACCENT_AMBER);
 
         pillRow.add(correctPill);
@@ -97,8 +99,9 @@ public class ResultPanel extends JPanel {
         JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 0));
         btnRow.setOpaque(false);
         btnRow.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
 
-        PrimaryButton tryAgainBtn = new PrimaryButton("Try Again ↻");
+        PrimaryButton tryAgainBtn = new PrimaryButton("Try Again");
         tryAgainBtn.setPreferredSize(new Dimension(170, 46));
         tryAgainBtn.addActionListener(e -> {
             if (onTryAgain != null) onTryAgain.run();
@@ -142,6 +145,7 @@ public class ResultPanel extends JPanel {
             }
         });
         centerContainer.add(reviewLink);
+        centerContainer.add(Box.createVerticalGlue());
 
         add(centerContainer, BorderLayout.CENTER);
     }
@@ -156,9 +160,9 @@ public class ResultPanel extends JPanel {
         String subLabel = result.getCorrect() + " of " + result.getTotalQuestions() + " Correct";
         scoreMeter.setScore(result.getScorePercent(), subLabel);
 
-        correctPill.setText("✓ " + result.getCorrect() + " Correct");
-        wrongPill.setText("✕ " + result.getWrong() + " Wrong");
-        skippedPill.setText("→ " + result.getSkipped() + " Skipped");
+        correctPill.setText(result.getCorrect() + " Correct");
+        wrongPill.setText(result.getWrong() + " Wrong");
+        skippedPill.setText(result.getSkipped() + " Skipped");
         gradePill.setText("Grade " + result.getGrade());
 
         metaLabel.setText(result.getCategory() + " · " + result.getFormattedDuration());

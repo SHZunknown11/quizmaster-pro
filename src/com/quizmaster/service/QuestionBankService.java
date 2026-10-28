@@ -13,6 +13,9 @@ import java.util.*;
  */
 public class QuestionBankService {
 
+    private static final List<String> PREFERRED_ORDER = List.of(
+            "Java Fundamentals", "OOP Concepts", "Collections Framework", "Data Structures");
+
     private final Path questionsDir;
     private final Map<String, List<Question>> categoryCache = new LinkedHashMap<>();
 
@@ -71,7 +74,15 @@ public class QuestionBankService {
      * Returns all available category names.
      */
     public List<String> getCategories() {
-        return new ArrayList<>(categoryCache.keySet());
+        List<String> categories = new ArrayList<>(categoryCache.keySet());
+        // Directory listing order is arbitrary; keep the cards in a stable, sensible order.
+        categories.sort(Comparator
+                .comparingInt((String c) -> {
+                    int i = PREFERRED_ORDER.indexOf(c);
+                    return i < 0 ? Integer.MAX_VALUE : i;
+                })
+                .thenComparing(Comparator.naturalOrder()));
+        return categories;
     }
 
     /**

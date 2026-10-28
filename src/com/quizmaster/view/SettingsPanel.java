@@ -7,10 +7,13 @@ import com.quizmaster.model.UserProfile;
 import com.quizmaster.service.AudioService;
 import com.quizmaster.service.StorageService;
 import com.quizmaster.util.AppTheme;
+import com.quizmaster.util.UiKit;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 
 /**
  * Screen: Settings Panel.
@@ -66,7 +69,7 @@ public class SettingsPanel extends JPanel {
         backBtn.addActionListener(e -> {
             if (onBackToHome != null) onBackToHome.run();
         });
-        header.add(backBtn, BorderLayout.EAST);
+        header.add(UiKit.verticallyCentered(backBtn), BorderLayout.EAST);
 
         add(header, BorderLayout.NORTH);
 
@@ -114,14 +117,24 @@ public class SettingsPanel extends JPanel {
         saveNameBtn.setPreferredSize(new Dimension(80, 36));
         saveNameBtn.addActionListener(e -> {
             String newName = nameField.getText().trim();
-            if (!newName.isEmpty()) {
-                UserProfile p = storageService.loadProfile();
-                p.setDisplayName(newName);
-                storageService.saveProfile(p);
-                AudioService.playCorrect();
-                JOptionPane.showMessageDialog(this, "Profile name updated to: " + newName, "Success", JOptionPane.INFORMATION_MESSAGE);
-                if (onProfileUpdated != null) onProfileUpdated.run();
+            if (newName.isEmpty()) {
+                AudioService.playWrong();
+                JOptionPane.showMessageDialog(this, "Display name can't be empty.", "Display Name", JOptionPane.WARNING_MESSAGE);
+                nameField.requestFocusInWindow();
+                return;
             }
+            if (newName.length() > 30) {
+                AudioService.playWrong();
+                JOptionPane.showMessageDialog(this, "Display name must be 30 characters or fewer.", "Display Name", JOptionPane.WARNING_MESSAGE);
+                nameField.requestFocusInWindow();
+                return;
+            }
+            UserProfile p = storageService.loadProfile();
+            p.setDisplayName(newName);
+            storageService.saveProfile(p);
+            AudioService.playCorrect();
+            JOptionPane.showMessageDialog(this, "Profile name updated to: " + newName, "Success", JOptionPane.INFORMATION_MESSAGE);
+            if (onProfileUpdated != null) onProfileUpdated.run();
         });
         profRight.add(saveNameBtn);
 
@@ -171,9 +184,7 @@ public class SettingsPanel extends JPanel {
         // UX-05: start from the persisted preference, not a hardcoded 30s
         defaultTimer = profile.getTimerPreference();
         timerCombo.setSelectedItem(defaultTimer);
-        timerCombo.setFont(AppTheme.FONT_BODY);
-        timerCombo.setBackground(AppTheme.BG_SURFACE_DARK);
-        timerCombo.setForeground(AppTheme.TEXT_PRIMARY);
+        styleCombo(timerCombo);
         timerCombo.addActionListener(e -> {
             Integer selected = (Integer) timerCombo.getSelectedItem();
             if (selected == null) return;
@@ -209,7 +220,7 @@ public class SettingsPanel extends JPanel {
         resetBtn.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
                     this,
-                    "Are you sure you want to reset all quiz statistics and history?",
+                    "Reset all quiz statistics and delete your quiz history?\nThis cannot be undone.",
                     "Confirm Data Reset",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE
@@ -229,6 +240,7 @@ public class SettingsPanel extends JPanel {
                 fresh.setLastQuizDate("");
                 fresh.setTimerPreference(current.getTimerPreference());
                 storageService.saveProfile(fresh);
+                storageService.clearHistory();
                 AudioService.playWrong();
                 JOptionPane.showMessageDialog(this, "All statistics have been reset.", "Reset Complete", JOptionPane.INFORMATION_MESSAGE);
                 if (onProfileUpdated != null) onProfileUpdated.run();
@@ -241,9 +253,9 @@ public class SettingsPanel extends JPanel {
 
         // 4. About Info
         RoundedCard aboutCard = new RoundedCard(12, AppTheme.BG_CARD, AppTheme.BORDER_SUBTLE, 1);
-        aboutCard.setLayout(new GridLayout(3, 1, 0, 4));
-        aboutCard.setBorder(new EmptyBorder(14, 18, 14, 18));
-        aboutCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+        aboutCard.setLayout(new GridLayout(3, 1, 0, 2));
+        aboutCard.setBorder(new EmptyBorder(12, 18, 12, 18));
+        aboutCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
         JLabel aboutTitle = new JLabel("QuizMaster Pro — Semester 5 Java Desktop Project");
         aboutTitle.setFont(AppTheme.FONT_BODY_BOLD);
@@ -263,6 +275,39 @@ public class SettingsPanel extends JPanel {
         center.add(aboutCard);
 
         add(center, BorderLayout.CENTER);
+    }
+
+    /**
+     * The system combo box paints a white field, which made the light item text
+     * unreadable. Use the basic UI so our dark colours are honoured, and show
+     * "30 seconds" instead of a bare number.
+     */
+    private void styleCombo(JComboBox<Integer> combo) {
+        combo.setUI(new BasicComboBoxUI() {
+            @Override
+            protected JButton createArrowButton() {
+                BasicArrowButton arrow = new BasicArrowButton(SwingConstants.SOUTH,
+                        AppTheme.BG_SURFACE_DARK, AppTheme.BORDER_SUBTLE,
+                        AppTheme.TEXT_SECONDARY, AppTheme.BG_SURFACE_DARK);
+                arrow.setBorder(BorderFactory.createEmptyBorder());
+                return arrow;
+            }
+        });
+        combo.setFont(AppTheme.FONT_BODY);
+        combo.setBackground(AppTheme.BG_SURFACE_DARK);
+        combo.setForeground(AppTheme.TEXT_PRIMARY);
+        combo.setBorder(BorderFactory.createLineBorder(AppTheme.BORDER_SUBTLE));
+        // A plain opaque label: DefaultListCellRenderer picks up the popup list's white
+        // background and made the selected value unreadable.
+        combo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            JLabel label = new JLabel(value + " seconds");
+            label.setOpaque(true);
+            label.setFont(AppTheme.FONT_BODY);
+            label.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
+            label.setBackground(isSelected ? AppTheme.BG_CARD_HOVER : AppTheme.BG_SURFACE_DARK);
+            label.setForeground(isSelected ? AppTheme.ACCENT_AMBER : AppTheme.TEXT_PRIMARY);
+            return label;
+        });
     }
 
     public int getDefaultTimer() {

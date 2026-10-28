@@ -6,6 +6,8 @@ import com.quizmaster.components.SecondaryButton;
 import com.quizmaster.model.QuizResult;
 import com.quizmaster.service.StorageService;
 import com.quizmaster.util.AppTheme;
+import com.quizmaster.util.DarkScrollBarUI;
+import com.quizmaster.util.UiKit;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -25,6 +27,8 @@ public class HistoryPanel extends JPanel {
 
     private static final DateTimeFormatter DISPLAY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd, yyyy · hh:mm a", Locale.ENGLISH);
+    private static final DateTimeFormatter SPACE_SEPARATED_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH);
     private static final DateTimeFormatter DATE_ONLY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH);
 
@@ -68,7 +72,7 @@ public class HistoryPanel extends JPanel {
         backBtn.addActionListener(e -> {
             if (onBackToHome != null) onBackToHome.run();
         });
-        header.add(backBtn, BorderLayout.EAST);
+        header.add(UiKit.verticallyCentered(backBtn), BorderLayout.EAST);
 
         add(header, BorderLayout.NORTH);
 
@@ -83,6 +87,8 @@ public class HistoryPanel extends JPanel {
         scroll.getViewport().setOpaque(false);
         scroll.setBorder(null);
         scroll.getVerticalScrollBar().setUnitIncrement(14);
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        DarkScrollBarUI.style(scroll);
 
         add(scroll, BorderLayout.CENTER);
 
@@ -168,11 +174,15 @@ public class HistoryPanel extends JPanel {
             LocalDateTime dt = LocalDateTime.parse(isoTimestamp);
             return dt.format(DISPLAY_FORMAT);
         } catch (DateTimeParseException ignored) {
-            // Older records may have stored a plain date only
+            // Older records may use "2026-10-26 18:30" or a plain date
             try {
-                return LocalDate.parse(isoTimestamp).format(DATE_ONLY_FORMAT);
+                return LocalDateTime.parse(isoTimestamp, SPACE_SEPARATED_FORMAT).format(DISPLAY_FORMAT);
             } catch (DateTimeParseException ignored2) {
-                return isoTimestamp;
+                try {
+                    return LocalDate.parse(isoTimestamp).format(DATE_ONLY_FORMAT);
+                } catch (DateTimeParseException ignored3) {
+                    return isoTimestamp;
+                }
             }
         }
     }

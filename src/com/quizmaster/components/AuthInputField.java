@@ -140,6 +140,7 @@ public class AuthInputField extends JPanel {
                 }
             };
             eyeBtn.setFocusPainted(false);
+            eyeBtn.setFocusable(false); // keep Tab order on the inputs
             eyeBtn.setBorderPainted(false);
             eyeBtn.setContentAreaFilled(false);
             eyeBtn.setOpaque(false);

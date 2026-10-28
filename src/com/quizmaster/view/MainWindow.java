@@ -152,7 +152,36 @@ public class MainWindow extends JFrame {
         add(cardContainer, BorderLayout.CENTER);
     }
 
+    /**
+     * Leaving a running quiz throws its progress away, so ask first. Returns true
+     * if navigation may continue.
+     */
+    private boolean confirmLeaveQuiz() {
+        if (!quizPanel.isQuizInProgress()) {
+            return true;
+        }
+        quizPanel.pauseTimer();
+        int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Leave the quiz? Your current progress will be lost.",
+                "Leave Quiz",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+        if (choice == JOptionPane.YES_OPTION) {
+            quizPanel.abandonSession();
+            return true;
+        }
+        quizPanel.resumeTimer();
+        return false;
+    }
+
     private void handleSidebarNavigation(String navId) {
+        if (!SidebarNav.NAV_LOGOUT.equals(navId) && !confirmLeaveQuiz()) {
+            // the sidebar already moved its highlight on click: put it back on the quiz
+            sidebar.setActiveNav(SidebarNav.NAV_QUIZ);
+            return;
+        }
         switch (navId) {
             case SidebarNav.NAV_HOME:
                 dashboardPanel.refreshData();
@@ -176,6 +205,10 @@ public class MainWindow extends JFrame {
     }
 
     private void handleLogout() {
+        boolean quizRunning = quizPanel.isQuizInProgress();
+        if (quizRunning) {
+            quizPanel.pauseTimer();
+        }
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 "Are you sure you want to sign out?",
@@ -183,14 +216,19 @@ public class MainWindow extends JFrame {
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE
         );
-        if (confirm == JOptionPane.YES_OPTION) {
-            storageService.logout();
-            sidebar.setVisible(false);
-            loginPanel.resetForm();
-            showScreen(CARD_LOGIN);
-            getContentPane().revalidate();
-            getContentPane().repaint();
+        if (confirm != JOptionPane.YES_OPTION) {
+            if (quizRunning) {
+                quizPanel.resumeTimer();
+            }
+            return;
         }
+        quizPanel.abandonSession();
+        storageService.logout();
+        sidebar.setVisible(false);
+        loginPanel.resetForm();
+        showScreen(CARD_LOGIN);
+        getContentPane().revalidate();
+        getContentPane().repaint();
     }
 
     public void showScreen(String cardName) {

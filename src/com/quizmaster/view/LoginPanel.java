@@ -7,12 +7,15 @@ import com.quizmaster.components.SecondaryButton;
 import com.quizmaster.service.AudioService;
 import com.quizmaster.service.StorageService;
 import com.quizmaster.util.AppTheme;
+import com.quizmaster.util.DarkScrollBarUI;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.HierarchyEvent;
+import java.util.regex.Pattern;
 import java.util.function.Consumer;
 
 /**
@@ -30,6 +33,8 @@ public class LoginPanel extends JPanel {
 
     private final StorageService storageService;
     private final Consumer<String> onLoginSuccess;
+
+    private static final Pattern USERNAME_RULE = Pattern.compile("[A-Za-z0-9_.-]{3,20}");
 
     private boolean isRegisterMode = false;
 
@@ -52,6 +57,7 @@ public class LoginPanel extends JPanel {
     private JLabel errorBannerLabel;
     private PrimaryButton submitBtn;
     private JLabel demoHintLabel;
+    private JPanel featurePills;
 
     public LoginPanel(StorageService storageService, Consumer<String> onLoginSuccess) {
         this.storageService = storageService;
@@ -61,6 +67,16 @@ public class LoginPanel extends JPanel {
         setLayout(new BorderLayout());
 
         initUI();
+
+        // Put the cursor in the username box whenever this screen appears (start-up and after sign-out)
+        addHierarchyListener(e -> {
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && isShowing()) {
+                SwingUtilities.invokeLater(() -> {
+                    if (isRegisterMode) regNameField.requestFocusInWindow();
+                    else signInUserField.requestFocusInWindow();
+                });
+            }
+        });
     }
 
     @Override
@@ -178,7 +194,7 @@ public class LoginPanel extends JPanel {
         headerPanel.add(Box.createVerticalStrut(10));
 
         // Feature Pill Tags with crisp colored vector dots (no emojis)
-        JPanel featurePills = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
+        featurePills = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         featurePills.setOpaque(false);
         featurePills.setAlignmentX(Component.CENTER_ALIGNMENT);
         featurePills.add(createFeatureTag("Java 17+", AppTheme.ACCENT_BLUE));
@@ -340,6 +356,7 @@ public class LoginPanel extends JPanel {
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(14);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        DarkScrollBarUI.style(scrollPane);
         add(scrollPane, BorderLayout.CENTER);
 
         // Bind Enter key to submit on all inputs
@@ -484,11 +501,13 @@ public class LoginPanel extends JPanel {
             formHostPanel.add(registerPanel, BorderLayout.CENTER);
             submitBtn.setText("Create Account →");
             demoHintLabel.setVisible(false);
+            featurePills.setVisible(false);
             regNameField.requestFocusInWindow();
         } else {
             formHostPanel.add(signInPanel, BorderLayout.CENTER);
             submitBtn.setText("Sign In →");
             demoHintLabel.setVisible(true);
+            featurePills.setVisible(true);
             signInUserField.requestFocusInWindow();
         }
 
@@ -507,12 +526,25 @@ public class LoginPanel extends JPanel {
         if (isRegisterMode) {
             String name = regNameField.getText().trim();
             String user = regUserField.getText().trim();
-            String pass = regPassField.getText().trim();
-            String confirm = regConfirmPassField.getText().trim();
+            String pass = regPassField.getText();
+            String confirm = regConfirmPassField.getText();
 
             if (user.isEmpty()) {
                 showError("Please choose a username.");
                 regUserField.requestFocusInWindow();
+                return;
+            }
+
+            if (!USERNAME_RULE.matcher(user).matches()) {
+                // the username becomes part of a file name, so keep it to safe characters
+                showError("Username: 3-20 letters, numbers, dot, dash or underscore.");
+                regUserField.requestFocusInWindow();
+                return;
+            }
+
+            if (name.length() > 30) {
+                showError("Full name must be 30 characters or fewer.");
+                regNameField.requestFocusInWindow();
                 return;
             }
 
@@ -553,7 +585,7 @@ public class LoginPanel extends JPanel {
         } else {
             // Sign in mode
             String user = signInUserField.getText().trim();
-            String pass = signInPassField.getText().trim();
+            String pass = signInPassField.getText();
 
             if (user.isEmpty()) {
                 showError("Please enter your username.");
