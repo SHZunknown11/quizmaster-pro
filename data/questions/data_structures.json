@@ -1,0 +1,140 @@
+{
+  "category": "Data Structures",
+  "questions": [
+    {
+      "id": "ds01",
+      "difficulty": "EASY",
+      "questionText": "What is the time complexity of accessing an element by index in an array?",
+      "options": ["O(n)", "O(1)", "O(log n)", "O(n^2)"],
+      "correctOptionIndex": 1,
+      "hint": "Arrays store elements contiguously in memory.",
+      "explanation": "Arrays provide O(1) constant-time access by index because elements are stored at contiguous memory addresses."
+    },
+    {
+      "id": "ds02",
+      "difficulty": "EASY",
+      "questionText": "Which data structure follows the Last-In-First-Out (LIFO) principle?",
+      "options": ["Queue", "Stack", "Array", "Linked List"],
+      "correctOptionIndex": 1,
+      "hint": "Think of a stack of plates.",
+      "explanation": "A Stack follows LIFO: the last element pushed is the first to be popped."
+    },
+    {
+      "id": "ds03",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the main advantage of a LinkedList over an ArrayList?",
+      "options": ["Faster random access", "Faster insertion and deletion at any position", "Less memory usage", "Built-in sorting"],
+      "correctOptionIndex": 1,
+      "hint": "No shifting of elements is needed.",
+      "explanation": "LinkedList provides O(1) insertion/deletion at known positions (no element shifting), while ArrayList requires O(n) shifting."
+    },
+    {
+      "id": "ds04",
+      "difficulty": "MEDIUM",
+      "questionText": "What is a binary search tree (BST)?",
+      "options": ["A tree where each node has exactly two children", "A tree where left child < parent < right child", "A tree with only leaf nodes", "A balanced tree with equal depths"],
+      "correctOptionIndex": 1,
+      "hint": "The ordering property is the key characteristic.",
+      "explanation": "A BST is a binary tree where for every node, all values in the left subtree are less than the node, and all values in the right subtree are greater."
+    },
+    {
+      "id": "ds05",
+      "difficulty": "HARD",
+      "questionText": "What is the worst-case time complexity of searching in an unbalanced BST?",
+      "options": ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
+      "correctOptionIndex": 2,
+      "hint": "An unbalanced BST can degenerate into a linked list.",
+      "explanation": "In the worst case (e.g., inserting sorted data), a BST becomes a linked list with O(n) search time. Balanced BSTs (AVL, Red-Black) guarantee O(log n)."
+    },
+    {
+      "id": "ds06",
+      "difficulty": "EASY",
+      "questionText": "Which data structure uses key-value pairs for storage?",
+      "options": ["Array", "Stack", "Hash Table / Map", "Queue"],
+      "correctOptionIndex": 2,
+      "hint": "You look up values using their associated keys.",
+      "explanation": "A Hash Table (Map) stores data as key-value pairs, allowing O(1) average-case lookup by key."
+    },
+    {
+      "id": "ds07",
+      "difficulty": "MEDIUM",
+      "questionText": "What is a hash collision?",
+      "options": ["When two keys have the same value", "When two different keys produce the same hash code", "When the hash table is full", "When a key is null"],
+      "correctOptionIndex": 1,
+      "hint": "The hash function maps different inputs to the same bucket.",
+      "explanation": "A hash collision occurs when two different keys produce the same hash code, mapping to the same bucket. Resolved via chaining (linked lists) or open addressing."
+    },
+    {
+      "id": "ds08",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the difference between a singly linked list and a doubly linked list?",
+      "options": ["Singly linked lists are faster", "Doubly linked lists have references to both next and previous nodes", "They are identical", "Singly linked lists use more memory"],
+      "correctOptionIndex": 1,
+      "hint": "One can traverse in both directions.",
+      "explanation": "A singly linked list has nodes with only a 'next' pointer. A doubly linked list has both 'next' and 'prev' pointers, enabling bidirectional traversal."
+    },
+    {
+      "id": "ds09",
+      "difficulty": "HARD",
+      "questionText": "What is the space complexity of a recursive algorithm that makes n recursive calls?",
+      "options": ["O(1)", "O(n) due to the call stack", "O(log n)", "O(n^2)"],
+      "correctOptionIndex": 1,
+      "hint": "Each recursive call adds a frame to the call stack.",
+      "explanation": "Each recursive call uses stack space for its frame (local variables, return address). With n recursive calls, the space complexity is O(n)."
+    },
+    {
+      "id": "ds10",
+      "difficulty": "EASY",
+      "questionText": "Which sorting algorithm has the best average-case time complexity?",
+      "options": ["Bubble Sort - O(n^2)", "Merge Sort - O(n log n)", "Selection Sort - O(n^2)", "Insertion Sort - O(n^2)"],
+      "correctOptionIndex": 1,
+      "hint": "It uses a divide-and-conquer approach.",
+      "explanation": "Merge Sort has O(n log n) average and worst-case time complexity, making it the most consistently efficient among common comparison-based sorts."
+    },
+    {
+      "id": "ds11",
+      "difficulty": "MEDIUM",
+      "questionText": "What is a priority queue?",
+      "options": ["A queue that processes elements alphabetically", "A queue where elements are dequeued based on priority, not insertion order", "A faster version of a regular queue", "A queue limited to a fixed size"],
+      "correctOptionIndex": 1,
+      "hint": "The element with the highest priority is served first.",
+      "explanation": "A priority queue orders elements by priority (typically using a heap). The highest-priority element is always dequeued first, regardless of insertion order."
+    },
+    {
+      "id": "ds12",
+      "difficulty": "HARD",
+      "questionText": "What is the time complexity of inserting into a heap?",
+      "options": ["O(1)", "O(n)", "O(log n)", "O(n log n)"],
+      "correctOptionIndex": 2,
+      "hint": "The element may need to 'bubble up' through the tree levels.",
+      "explanation": "Inserting into a heap takes O(log n) because the new element is added at the bottom and then 'sifted up' through at most log n levels to maintain the heap property."
+    },
+    {
+      "id": "ds13",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the purpose of the Deque interface in Java?",
+      "options": ["To create a double-ended queue that supports insertion and removal at both ends", "To create a sorted queue", "To delete elements from a queue", "To create an immutable queue"],
+      "correctOptionIndex": 0,
+      "hint": "Deque stands for Double-Ended Queue.",
+      "explanation": "Deque (Double-Ended Queue) allows insertion and removal at both the front and rear. It can be used as both a stack (LIFO) and a queue (FIFO)."
+    },
+    {
+      "id": "ds14",
+      "difficulty": "EASY",
+      "questionText": "What is the time complexity of linear search?",
+      "options": ["O(1)", "O(log n)", "O(n)", "O(n^2)"],
+      "correctOptionIndex": 2,
+      "hint": "It checks each element one by one.",
+      "explanation": "Linear search examines each element sequentially until a match is found or the end is reached, giving O(n) worst-case time complexity."
+    },
+    {
+      "id": "ds15",
+      "difficulty": "HARD",
+      "questionText": "What is the time complexity of binary search?",
+      "options": ["O(n)", "O(log n)", "O(1)", "O(n log n)"],
+      "correctOptionIndex": 1,
+      "hint": "It halves the search space at each step.",
+      "explanation": "Binary search works on sorted arrays by repeatedly dividing the search interval in half, achieving O(log n) time complexity."
+    }
+  ]
+}

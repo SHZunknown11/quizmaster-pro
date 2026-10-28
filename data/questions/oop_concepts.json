@@ -1,0 +1,140 @@
+{
+  "category": "OOP Concepts",
+  "questions": [
+    {
+      "id": "oop01",
+      "difficulty": "EASY",
+      "questionText": "What are the four pillars of Object-Oriented Programming?",
+      "options": ["Abstraction, Encapsulation, Inheritance, Polymorphism", "Classes, Objects, Methods, Variables", "Loops, Arrays, Functions, Modules", "Compilation, Execution, Testing, Deployment"],
+      "correctOptionIndex": 0,
+      "hint": "Think A-E-I-P.",
+      "explanation": "The four pillars of OOP are Abstraction, Encapsulation, Inheritance, and Polymorphism."
+    },
+    {
+      "id": "oop02",
+      "difficulty": "EASY",
+      "questionText": "What is encapsulation?",
+      "options": ["Inheriting properties from a parent class", "Hiding internal details and providing a public interface", "Using multiple forms of a method", "Creating abstract classes"],
+      "correctOptionIndex": 1,
+      "hint": "Think of it as data hiding with access control.",
+      "explanation": "Encapsulation bundles data (fields) and methods that operate on the data, restricting direct access via access modifiers."
+    },
+    {
+      "id": "oop03",
+      "difficulty": "MEDIUM",
+      "questionText": "Which keyword is used to inherit a class in Java?",
+      "options": ["implements", "extends", "inherits", "super"],
+      "correctOptionIndex": 1,
+      "hint": "A subclass _____ a superclass.",
+      "explanation": "The 'extends' keyword is used to create a subclass that inherits from a superclass."
+    },
+    {
+      "id": "oop04",
+      "difficulty": "MEDIUM",
+      "questionText": "What is method overriding?",
+      "options": ["Defining multiple methods with the same name but different parameters in the same class", "Redefining a superclass method in a subclass with the same signature", "Creating a private method", "Calling a method recursively"],
+      "correctOptionIndex": 1,
+      "hint": "It involves a parent-child class relationship.",
+      "explanation": "Method overriding occurs when a subclass provides its own implementation of a method already defined in its superclass, with the same name, return type, and parameters."
+    },
+    {
+      "id": "oop05",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the difference between method overloading and method overriding?",
+      "options": ["Overloading changes return type; overriding changes parameters", "Overloading is in the same class with different parameters; overriding is in a subclass with the same signature", "They are the same thing", "Overloading requires inheritance; overriding does not"],
+      "correctOptionIndex": 1,
+      "hint": "One is compile-time polymorphism, the other is runtime.",
+      "explanation": "Overloading (compile-time polymorphism): same method name, different parameters, same class. Overriding (runtime polymorphism): same signature, subclass redefines parent's method."
+    },
+    {
+      "id": "oop06",
+      "difficulty": "HARD",
+      "questionText": "Can a Java class extend multiple classes?",
+      "options": ["Yes, Java supports multiple inheritance of classes", "No, Java only supports single class inheritance", "Yes, but only if the classes are abstract", "Yes, using the 'multi' keyword"],
+      "correctOptionIndex": 1,
+      "hint": "Java avoids the diamond problem.",
+      "explanation": "Java does NOT support multiple class inheritance to avoid ambiguity (diamond problem). A class can extend only one class but can implement multiple interfaces."
+    },
+    {
+      "id": "oop07",
+      "difficulty": "EASY",
+      "questionText": "What is a constructor in Java?",
+      "options": ["A method that destroys objects", "A special method called when an object is created", "A static method in every class", "A method that returns the class type"],
+      "correctOptionIndex": 1,
+      "hint": "It has the same name as the class and no return type.",
+      "explanation": "A constructor is a special method with the same name as the class, no return type, and is automatically called when an object is instantiated using 'new'."
+    },
+    {
+      "id": "oop08",
+      "difficulty": "MEDIUM",
+      "questionText": "What is an abstract class in Java?",
+      "options": ["A class that cannot have methods", "A class that cannot be instantiated and may contain abstract methods", "A class with only static methods", "A class that is automatically garbage collected"],
+      "correctOptionIndex": 1,
+      "hint": "It serves as a blueprint for subclasses.",
+      "explanation": "An abstract class cannot be instantiated directly. It can have both abstract (unimplemented) and concrete (implemented) methods. Subclasses must implement all abstract methods."
+    },
+    {
+      "id": "oop09",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the purpose of the 'super' keyword?",
+      "options": ["To create a new superclass", "To refer to the immediate parent class object", "To make a method static", "To prevent method overriding"],
+      "correctOptionIndex": 1,
+      "hint": "Used to call parent constructors or methods from a child class.",
+      "explanation": "The 'super' keyword refers to the parent class. It's used to call parent constructors (super()), access parent methods (super.method()), and parent fields."
+    },
+    {
+      "id": "oop10",
+      "difficulty": "HARD",
+      "questionText": "What is the output when a subclass constructor is called?",
+      "options": ["Only the subclass constructor runs", "The superclass constructor runs first, then the subclass constructor", "Constructors don't follow any order", "Compilation error occurs"],
+      "correctOptionIndex": 1,
+      "hint": "There's a chain of constructor calls going up the hierarchy.",
+      "explanation": "Java guarantees constructor chaining: the superclass constructor is always called first (implicitly via super() or explicitly) before the subclass constructor body executes."
+    },
+    {
+      "id": "oop11",
+      "difficulty": "MEDIUM",
+      "questionText": "What is polymorphism in Java?",
+      "options": ["The ability of a variable to hold only one type", "The ability of an object to take many forms", "The process of converting types", "A design pattern for factories"],
+      "correctOptionIndex": 1,
+      "hint": "poly = many, morph = forms.",
+      "explanation": "Polymorphism allows objects to be treated as instances of their parent class. A parent reference can hold a child object, and the correct overridden method is called at runtime."
+    },
+    {
+      "id": "oop12",
+      "difficulty": "EASY",
+      "questionText": "What is the difference between an interface and an abstract class?",
+      "options": ["There is no difference", "Interfaces can only have abstract methods (pre-Java 8) and a class can implement multiple interfaces", "Abstract classes support multiple inheritance", "Interfaces can have constructors"],
+      "correctOptionIndex": 1,
+      "hint": "Think about what each CAN and CANNOT have.",
+      "explanation": "Interfaces (pre-Java 8) have only abstract methods and constants. A class can implement multiple interfaces but extend only one abstract class. Abstract classes can have constructors, fields, and concrete methods."
+    },
+    {
+      "id": "oop13",
+      "difficulty": "HARD",
+      "questionText": "What is the 'instanceof' operator used for?",
+      "options": ["To create a new instance", "To check if an object is an instance of a specific class or interface", "To compare two objects for equality", "To cast an object to another type"],
+      "correctOptionIndex": 1,
+      "hint": "It returns a boolean value.",
+      "explanation": "The 'instanceof' operator checks whether an object is an instance of a particular class, subclass, or implements a particular interface. It returns true or false."
+    },
+    {
+      "id": "oop14",
+      "difficulty": "MEDIUM",
+      "questionText": "What is composition in OOP?",
+      "options": ["A class containing objects of other classes as fields", "A class extending another class", "A method calling itself", "Two classes sharing the same interface"],
+      "correctOptionIndex": 0,
+      "hint": "It represents a 'HAS-A' relationship.",
+      "explanation": "Composition is a design principle where a class contains references to objects of other classes (HAS-A relationship), as opposed to inheritance (IS-A relationship). It favors flexibility over rigid hierarchies."
+    },
+    {
+      "id": "oop15",
+      "difficulty": "HARD",
+      "questionText": "What does the @Override annotation do?",
+      "options": ["It forces the compiler to override a method", "It tells the compiler to verify that the method actually overrides a superclass method", "It prevents the method from being overridden", "It makes the method abstract"],
+      "correctOptionIndex": 1,
+      "hint": "It's a compile-time safety check.",
+      "explanation": "@Override is a compile-time annotation that tells the compiler to check that the method actually overrides a method in a superclass or interface. If not, a compilation error occurs."
+    }
+  ]
+}

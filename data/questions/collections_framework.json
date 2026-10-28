@@ -1,0 +1,140 @@
+{
+  "category": "Collections Framework",
+  "questions": [
+    {
+      "id": "cf01",
+      "difficulty": "EASY",
+      "questionText": "Which interface is the root of the Java Collections Framework?",
+      "options": ["List", "Set", "Collection", "Map"],
+      "correctOptionIndex": 2,
+      "hint": "Map is not part of this hierarchy.",
+      "explanation": "The Collection interface is the root of the collections hierarchy. List, Set, and Queue extend Collection. Map is separate."
+    },
+    {
+      "id": "cf02",
+      "difficulty": "EASY",
+      "questionText": "Which collection allows duplicate elements?",
+      "options": ["HashSet", "TreeSet", "ArrayList", "LinkedHashSet"],
+      "correctOptionIndex": 2,
+      "hint": "Sets do not allow duplicates by definition.",
+      "explanation": "ArrayList (and all List implementations) allows duplicate elements. Set implementations (HashSet, TreeSet) do not allow duplicates."
+    },
+    {
+      "id": "cf03",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the time complexity of ArrayList.get(index)?",
+      "options": ["O(n)", "O(1)", "O(log n)", "O(n log n)"],
+      "correctOptionIndex": 1,
+      "hint": "ArrayList uses an internal array for storage.",
+      "explanation": "ArrayList stores elements in a contiguous array, so accessing by index is O(1) constant time."
+    },
+    {
+      "id": "cf04",
+      "difficulty": "MEDIUM",
+      "questionText": "Which collection guarantees FIFO (First-In, First-Out) order?",
+      "options": ["Stack", "PriorityQueue", "LinkedList (as Queue)", "TreeSet"],
+      "correctOptionIndex": 2,
+      "hint": "A queue processes elements in the order they arrive.",
+      "explanation": "LinkedList implements the Queue interface and provides FIFO ordering. PriorityQueue orders by priority, not insertion order."
+    },
+    {
+      "id": "cf05",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the difference between HashMap and TreeMap?",
+      "options": ["HashMap is sorted; TreeMap is not", "TreeMap maintains sorted key order; HashMap does not guarantee order", "They are identical", "HashMap uses linked lists; TreeMap uses arrays"],
+      "correctOptionIndex": 1,
+      "hint": "One uses a hash table, the other uses a red-black tree.",
+      "explanation": "TreeMap sorts entries by natural key order (or a Comparator). HashMap does not guarantee any order. TreeMap operations are O(log n); HashMap is O(1) average."
+    },
+    {
+      "id": "cf06",
+      "difficulty": "HARD",
+      "questionText": "What happens if you add a duplicate key to a HashMap?",
+      "options": ["An exception is thrown", "The old value is replaced with the new value", "Both values are stored", "The insertion is silently ignored"],
+      "correctOptionIndex": 1,
+      "hint": "Maps enforce unique keys.",
+      "explanation": "When a duplicate key is inserted into a HashMap, the old value associated with that key is replaced by the new value. The put() method returns the previous value."
+    },
+    {
+      "id": "cf07",
+      "difficulty": "EASY",
+      "questionText": "Which class provides a resizable-array implementation of the List interface?",
+      "options": ["LinkedList", "ArrayList", "Vector", "HashSet"],
+      "correctOptionIndex": 1,
+      "hint": "Its name literally contains 'Array' and 'List'.",
+      "explanation": "ArrayList implements List using a dynamically resizing internal array."
+    },
+    {
+      "id": "cf08",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the purpose of the Iterator interface?",
+      "options": ["To sort collections", "To traverse elements of a collection one by one", "To convert collections to arrays", "To synchronize collection access"],
+      "correctOptionIndex": 1,
+      "hint": "It has hasNext() and next() methods.",
+      "explanation": "Iterator provides a standard way to traverse any Collection element by element using hasNext() to check and next() to retrieve the next element."
+    },
+    {
+      "id": "cf09",
+      "difficulty": "HARD",
+      "questionText": "What is a ConcurrentModificationException?",
+      "options": ["Thrown when two threads access different collections", "Thrown when a collection is modified while being iterated over (fail-fast)", "Thrown when a collection exceeds its capacity", "Thrown when null is added to a collection"],
+      "correctOptionIndex": 1,
+      "hint": "It's related to fail-fast iterators.",
+      "explanation": "ConcurrentModificationException is thrown when a collection is structurally modified during iteration (e.g., adding/removing elements while iterating with a for-each loop)."
+    },
+    {
+      "id": "cf10",
+      "difficulty": "MEDIUM",
+      "questionText": "Which collection should you use if you need unique elements in sorted order?",
+      "options": ["ArrayList", "HashSet", "TreeSet", "LinkedList"],
+      "correctOptionIndex": 2,
+      "hint": "It uses a tree structure to maintain order.",
+      "explanation": "TreeSet stores unique elements in sorted (natural or custom) order using a red-black tree internally."
+    },
+    {
+      "id": "cf11",
+      "difficulty": "EASY",
+      "questionText": "What does Collections.sort() do?",
+      "options": ["Reverses a list", "Sorts a list in natural ascending order", "Shuffles a list randomly", "Removes duplicates from a list"],
+      "correctOptionIndex": 1,
+      "hint": "It modifies the list in-place.",
+      "explanation": "Collections.sort() sorts the specified List in ascending natural order (elements must implement Comparable)."
+    },
+    {
+      "id": "cf12",
+      "difficulty": "HARD",
+      "questionText": "What is the load factor of a HashMap?",
+      "options": ["The maximum number of elements", "A threshold ratio that triggers resizing of the internal array", "The number of collisions allowed", "The speed of hash computation"],
+      "correctOptionIndex": 1,
+      "hint": "Default value is 0.75.",
+      "explanation": "The load factor (default 0.75) determines when a HashMap resizes. When the number of entries exceeds capacity * loadFactor, the internal array doubles in size and entries are rehashed."
+    },
+    {
+      "id": "cf13",
+      "difficulty": "MEDIUM",
+      "questionText": "Which interface should a class implement to be used as a key in a HashMap?",
+      "options": ["Serializable", "Comparable", "It must override hashCode() and equals()", "Iterable"],
+      "correctOptionIndex": 2,
+      "hint": "HashMap uses these two methods to locate and compare keys.",
+      "explanation": "For correct HashMap behavior, key objects must override both hashCode() (to determine bucket) and equals() (to handle collisions and key comparison)."
+    },
+    {
+      "id": "cf14",
+      "difficulty": "EASY",
+      "questionText": "What is the difference between List and Set?",
+      "options": ["List is faster than Set", "List allows duplicates and maintains insertion order; Set does not allow duplicates", "Set is ordered; List is not", "There is no difference"],
+      "correctOptionIndex": 1,
+      "hint": "Think about uniqueness and ordering guarantees.",
+      "explanation": "List allows duplicate elements and maintains insertion order. Set does not allow duplicates (uniqueness enforced)."
+    },
+    {
+      "id": "cf15",
+      "difficulty": "HARD",
+      "questionText": "What is the difference between Comparable and Comparator?",
+      "options": ["They are the same interface", "Comparable defines natural ordering within the class; Comparator defines external ordering", "Comparable is for primitives; Comparator is for objects", "Comparable is deprecated in favor of Comparator"],
+      "correctOptionIndex": 1,
+      "hint": "One uses compareTo(), the other uses compare().",
+      "explanation": "Comparable is implemented by the class itself (compareTo method) for natural ordering. Comparator is a separate class/lambda (compare method) for custom/alternative ordering."
+    }
+  ]
+}

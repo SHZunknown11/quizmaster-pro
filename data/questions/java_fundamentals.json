@@ -1,0 +1,140 @@
+{
+  "category": "Java Fundamentals",
+  "questions": [
+    {
+      "id": "jf01",
+      "difficulty": "EASY",
+      "questionText": "Which keyword is used to define a class in Java?",
+      "options": ["struct", "class", "define", "object"],
+      "correctOptionIndex": 1,
+      "hint": "It's the same keyword used in C++ and C#.",
+      "explanation": "The 'class' keyword is used to declare a class in Java."
+    },
+    {
+      "id": "jf02",
+      "difficulty": "EASY",
+      "questionText": "What is the default value of an int variable in Java?",
+      "options": ["1", "null", "0", "undefined"],
+      "correctOptionIndex": 2,
+      "hint": "Primitive numeric types default to their zero value.",
+      "explanation": "The default value of an int in Java is 0."
+    },
+    {
+      "id": "jf03",
+      "difficulty": "EASY",
+      "questionText": "Which method is the entry point of a Java application?",
+      "options": ["start()", "run()", "main()", "init()"],
+      "correctOptionIndex": 2,
+      "hint": "It's declared as public static void.",
+      "explanation": "The main() method with signature 'public static void main(String[] args)' is the entry point."
+    },
+    {
+      "id": "jf04",
+      "difficulty": "MEDIUM",
+      "questionText": "Which of the following is NOT a primitive data type in Java?",
+      "options": ["int", "boolean", "String", "char"],
+      "correctOptionIndex": 2,
+      "hint": "One of these is actually an object reference type.",
+      "explanation": "String is a class (reference type), not a primitive. The 8 primitives are: byte, short, int, long, float, double, boolean, char."
+    },
+    {
+      "id": "jf05",
+      "difficulty": "MEDIUM",
+      "questionText": "What does the 'final' keyword mean when applied to a variable?",
+      "options": ["The variable can be overridden", "The variable becomes static", "The variable's value cannot be changed after assignment", "The variable is garbage collected"],
+      "correctOptionIndex": 2,
+      "hint": "Think of it as making the variable constant.",
+      "explanation": "A final variable can only be assigned once. Once initialized, its value cannot be changed."
+    },
+    {
+      "id": "jf06",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the output of: System.out.println(10 + 20 + \"Hello\")?",
+      "options": ["1020Hello", "30Hello", "Hello1020", "Compilation Error"],
+      "correctOptionIndex": 1,
+      "hint": "Java evaluates left to right. Before the String, it's arithmetic.",
+      "explanation": "10 + 20 = 30 (integer addition), then 30 + \"Hello\" = \"30Hello\" (string concatenation)."
+    },
+    {
+      "id": "jf07",
+      "difficulty": "MEDIUM",
+      "questionText": "Which access modifier makes a member accessible only within its own class?",
+      "options": ["public", "protected", "default", "private"],
+      "correctOptionIndex": 3,
+      "hint": "It's the most restrictive access level.",
+      "explanation": "The 'private' modifier restricts access to only within the declaring class."
+    },
+    {
+      "id": "jf08",
+      "difficulty": "HARD",
+      "questionText": "What happens when you compile and run: int x = 5/0;?",
+      "options": ["Compilation error", "Prints 0", "Throws ArithmeticException at runtime", "Prints Infinity"],
+      "correctOptionIndex": 2,
+      "hint": "Integer division by zero is not the same as floating-point division by zero.",
+      "explanation": "Integer division by zero throws ArithmeticException at runtime. (Floating-point 5.0/0 would give Infinity.)"
+    },
+    {
+      "id": "jf09",
+      "difficulty": "EASY",
+      "questionText": "Which of the following is used to create an object in Java?",
+      "options": ["alloc", "new", "create", "malloc"],
+      "correctOptionIndex": 1,
+      "hint": "It's a keyword followed by the constructor call.",
+      "explanation": "The 'new' keyword allocates memory and calls the constructor to create an object."
+    },
+    {
+      "id": "jf10",
+      "difficulty": "MEDIUM",
+      "questionText": "What is autoboxing in Java?",
+      "options": ["Converting an array to a list", "Automatic conversion of primitive to wrapper class", "Encrypting data automatically", "Compressing objects for storage"],
+      "correctOptionIndex": 1,
+      "hint": "Think about int → Integer conversion.",
+      "explanation": "Autoboxing is the automatic conversion of a primitive type (e.g., int) to its corresponding wrapper class (e.g., Integer)."
+    },
+    {
+      "id": "jf11",
+      "difficulty": "HARD",
+      "questionText": "What is the result of: \"Hello\" == new String(\"Hello\")?",
+      "options": ["true", "false", "Compilation Error", "NullPointerException"],
+      "correctOptionIndex": 1,
+      "hint": "== compares references, not values for objects.",
+      "explanation": "The == operator compares object references. The string literal and new String() create different objects, so it returns false. Use .equals() for value comparison."
+    },
+    {
+      "id": "jf12",
+      "difficulty": "EASY",
+      "questionText": "Which loop is guaranteed to execute at least once?",
+      "options": ["for loop", "while loop", "do-while loop", "for-each loop"],
+      "correctOptionIndex": 2,
+      "hint": "The condition check happens after the first iteration.",
+      "explanation": "A do-while loop checks the condition after executing the body, so it always runs at least once."
+    },
+    {
+      "id": "jf13",
+      "difficulty": "MEDIUM",
+      "questionText": "What is the size of a char in Java?",
+      "options": ["1 byte", "2 bytes", "4 bytes", "Depends on the platform"],
+      "correctOptionIndex": 1,
+      "hint": "Java uses Unicode for characters.",
+      "explanation": "A char in Java is 2 bytes (16 bits) because Java uses UTF-16 encoding for characters."
+    },
+    {
+      "id": "jf14",
+      "difficulty": "HARD",
+      "questionText": "Which statement about Java arrays is TRUE?",
+      "options": ["Arrays can grow dynamically", "Arrays are objects in Java", "Array indices start at 1", "Arrays can hold different data types"],
+      "correctOptionIndex": 1,
+      "hint": "Arrays have a .length property, not a .length() method.",
+      "explanation": "In Java, arrays are objects. They have a fixed size (cannot grow), indices start at 0, and all elements must be the same type."
+    },
+    {
+      "id": "jf15",
+      "difficulty": "MEDIUM",
+      "questionText": "What does the 'static' keyword mean for a method?",
+      "options": ["The method can only be called once", "The method belongs to the class, not instances", "The method is thread-safe", "The method cannot return a value"],
+      "correctOptionIndex": 1,
+      "hint": "You can call it without creating an object.",
+      "explanation": "A static method belongs to the class itself and can be called without creating an instance of the class."
+    }
+  ]
+}
